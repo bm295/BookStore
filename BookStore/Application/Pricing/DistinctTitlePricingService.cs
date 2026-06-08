@@ -1,4 +1,4 @@
-using BookStore.Domain.Catalog;
+using DomainBook = BookStore.Domain.Catalog.Book;
 using BookStore.Domain.Pricing;
 
 namespace BookStore.Application.Pricing;
@@ -15,7 +15,7 @@ public sealed class DistinctTitlePricingService : IPricingService
         _discountPolicy = discountPolicy;
     }
 
-    public int CalculatePrice(IReadOnlyCollection<Book> bookCart)
+    public int CalculatePrice(IReadOnlyCollection<DomainBook> bookCart)
     {
         ArgumentNullException.ThrowIfNull(bookCart);
 
