@@ -12,8 +12,8 @@ Use this backlog for implementation work. Pull exactly one ready slice at a time
 - [ ] S02 Add missing characterization tests for current pricing edge cases before refactoring. Depends on: S00.
 
 ## Wave 1: Error Model and Domain Foundation
-- [ ] S10 Add `BookStoreException` base type and unit tests. Depends on: none.
-- [ ] S11 Add `DomainValidationException`, `DuplicateEntityException`, and `EntityNotFoundException`. Depends on: S10.
+- [x] S10 Add `BookStoreException` base type and unit tests. Depends on: none.
+- [ ] S11 Add `DomainValidationException`, `DuplicateEntityException`, and `EntityNotFoundException`. Depends on: S10. (Partially started: `DomainValidationException` exists; duplicate/not-found exceptions remain.)
 - [ ] S12 Add `InsufficientStockException`, `PersistenceException`, `MalformedDataException`, and `UnsupportedSchemaVersionException`. Depends on: S10.
 - [ ] S13 Expand `Book` to include ISBN, title, author, category, decimal base price, and `IsActive`. Depends on: S11.
 - [ ] S14 Add `Book` validation rules for required fields, non-negative price, and basic ISBN format. Depends on: S13.
@@ -30,7 +30,7 @@ Use this backlog for implementation work. Pull exactly one ready slice at a time
 - [ ] S26 Add checkout stock validation and atomic inventory decrement behavior. Depends on: S16, S24, S25.
 
 ## Wave 3: Pricing Engine
-- [ ] S30 Introduce `PricingContext` and promotion-rule abstractions without changing current totals. Depends on: S02, S23.
+- [ ] S30 Introduce `PricingContext` and promotion-rule abstractions without changing current totals. Depends on: S02, S23. (Initial Clean Architecture refactor introduced pricing service and discount policy boundaries; `PricingContext` remains.)
 - [ ] S31 Add `DistinctTitleBundlePromotion` for 1 to 5 title bundle discounts using decimal pricing. Depends on: S30.
 - [ ] S32 Add bundle optimizer that chooses the lowest total price instead of a largest-bundle-first heuristic. Depends on: S31.
 - [ ] S33 Add mixed-price bundle coverage so discounts apply to actual line prices, not a single shared price. Depends on: S31.
@@ -60,8 +60,8 @@ Use this backlog for implementation work. Pull exactly one ready slice at a time
 - [x] S63 Add ADR folder and template. Depends on: none.
 
 ## Recommended Next 5 Slices
-1. S10 Add `BookStoreException` base type and unit tests.
-2. S11 Add the first domain exception set.
-3. S13 Expand `Book` metadata model.
-4. S15 Add `InventoryItem` invariants.
-5. S20 Add `CartItem` invariants.
+1. S11 Complete the first domain exception set.
+2. S13 Expand `Book` metadata model.
+3. S15 Add `InventoryItem` invariants.
+4. S20 Add `CartItem` invariants.
+5. S31 Add `DistinctTitleBundlePromotion` for decimal bundle discounts.

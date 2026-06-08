@@ -1,34 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+using BookStore.Application.Files;
+using BookStore.Infrastructure.Files;
 
-namespace BookStore
+namespace BookStore;
+
+/// <summary>
+/// Backward-compatible facade over file infrastructure.
+/// </summary>
+public class FileIO
 {
-    public class FileIO
+    private readonly IReadSpecificLine _lineReader;
+
+    public FileIO() : this(new LineFileReader())
     {
-        public string ReadSpecificLine(string filePath, int lineNumber)
-        {
-            if (string.IsNullOrWhiteSpace(filePath))
-            {
-                throw new Exception("Invalid File Path");
-            }
+    }
 
-            using (StreamReader file = new StreamReader(filePath))
-            {
-                string content = null;
-                for (int i = 1; i <= lineNumber; i++)
-                {
-                    file.ReadLine();
-                    if (file.EndOfStream)
-                    {
-                        break;
-                    }
-                }
-                content = file.ReadLine();
+    public FileIO(IReadSpecificLine lineReader)
+    {
+        _lineReader = lineReader;
+    }
 
-                return content;
-            }
-        }
+    public string? ReadSpecificLine(string filePath, int lineNumber)
+    {
+        return _lineReader.ReadSpecificLine(filePath, lineNumber);
     }
 }

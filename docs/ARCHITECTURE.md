@@ -67,3 +67,21 @@ External concerns:
 - Use `PERSISTENCE_SCHEMA.md` for file layout and JSON contracts.
 - Use `ERROR_MODEL.md` for exception taxonomy.
 - Use `ADR/` for stable architecture decisions.
+
+## 8) Incremental Clean Architecture Layout
+The codebase now follows an incremental Clean Architecture layout inside the existing `BookStore` class library while preserving the public compatibility facades used by existing callers and tests.
+
+- `BookStore/Domain/*` contains enterprise/domain concerns such as catalog models, pricing policy abstractions, discount policies, and typed domain errors.
+- `BookStore/Application/*` contains use-case and application-service boundaries such as cart price calculation and file-read ports.
+- `BookStore/Infrastructure/*` contains external adapters such as line-oriented file access.
+- Root-level `BookStoreEngine`, `Book`, and `FileIO` classes remain as compatibility facades so the refactor does not force immediate consumer changes.
+
+Dependency direction is inward-only:
+
+```text
+Infrastructure -> Application -> Domain
+Compatibility Facades -> Application/Infrastructure
+Domain -> no Application or Infrastructure dependencies
+```
+
+Architecture tests in `BookStoreTests/Architecture` protect the dependency rules for the Domain and Application layers.
