@@ -52,6 +52,7 @@ Use this backlog for implementation work. Pull exactly one ready slice at a time
 - [ ] S50 Add inventory snapshot query with low-stock flag. Depends on: S15, S40, S42.
 - [ ] S51 Add daily sales summary query grouped by UTC day. Depends on: S43.
 - [ ] S52 Add top-selling books query. Depends on: S43.
+- [x] S53 Enrich request order detail form query with catalog metadata join. Depends on: existing EF Core order form repository.
 
 ## Wave 6: Developer Experience
 - [ ] S60 Add `BookStoreTests/Unit` and `BookStoreTests/Integration` folder organization. Depends on: none.

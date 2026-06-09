@@ -73,7 +73,7 @@ The codebase now follows an incremental Clean Architecture layout inside the exi
 
 - `BookStore/Domain/*` contains enterprise/domain concerns such as catalog models, pricing policy abstractions, discount policies, and typed domain errors.
 - `BookStore/Application/*` contains use-case and application-service boundaries such as cart price calculation and file-read ports.
-- `BookStore/Infrastructure/*` contains external adapters such as line-oriented file access.
+- `BookStore/Infrastructure/*` contains external adapters such as line-oriented file access and EF Core repositories/projections.
 - Root-level `BookStoreEngine`, `Book`, and `FileIO` classes remain as compatibility facades so the refactor does not force immediate consumer changes.
 
 Dependency direction is inward-only:
@@ -85,3 +85,5 @@ Domain -> no Application or Infrastructure dependencies
 ```
 
 Architecture tests in `BookStoreTests/Architecture` protect the dependency rules for the Domain and Application layers.
+
+`OrderFormRepository.GetRequestOrderDetailFormAsync` is an infrastructure read-model adapter: it accepts an application command, resolves the requested form, and joins order detail lines with catalog book metadata in EF Core before returning application DTOs.

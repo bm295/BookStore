@@ -130,6 +130,19 @@ Order rules:
 - `subtotal`, `discountTotal`, and `grandTotal` must be greater than or equal to zero.
 - `grandTotal` must equal `subtotal - discountTotal`.
 
+## Relational Order Detail Projection
+The EF Core relational model used by `OrderFormRepository` represents order detail retrieval with three logical sets:
+
+- `RequestOrderDetailForms`: one row per requested order detail form, keyed by internal `Id` with unique `OrderId`.
+- `RequestOrderDetailLines`: one row per order detail line, linked to `RequestOrderDetailForms` by `RequestOrderDetailFormEntityId`; stores `BookId`, `Quantity`, and order-time `UnitPrice`.
+- `CatalogBooks`: one row per catalog book metadata record, keyed by internal `Id` with unique `BookId`; stores `Title` and `Author` for read-model enrichment.
+
+Projection rules:
+- `GetRequestOrderDetailForm` first resolves the requested form by `OrderId`.
+- The detail query joins `RequestOrderDetailLines` to `CatalogBooks` by `BookId` to populate title and author.
+- A missing catalog row is treated as stale historical data and returns fallback metadata instead of dropping the line.
+- `LineTotal` is calculated in the application projection from `Quantity * UnitPrice`; it is not stored on the relational line entity.
+
 ## Serialization Rules
 - Encoding: UTF-8
 - Date/time format: ISO 8601 with `Z`
