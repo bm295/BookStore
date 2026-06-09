@@ -16,6 +16,8 @@ Initial files:
 - `data/books.json`
 - `data/inventory.json`
 - `data/orders.json`
+- `data/languages.json`
+- `data/language-resources.json`
 
 Rules:
 - Writers create the `data/` directory on first write if it does not exist.
@@ -91,6 +93,51 @@ Inventory rules:
 - `quantityOnHand` is required and must be greater than or equal to zero.
 - `reorderThreshold` is required and must be greater than or equal to zero.
 - Duplicate `bookId` values are invalid.
+
+## Language Records
+Stored in `data/languages.json` for file-based storage and represented by the `LanguageMaster` table in relational storage.
+
+```json
+{
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-03-26T00:00:00Z",
+  "items": [
+    {
+      "languageCode": "vn",
+      "languageName": "Vietnamese"
+    }
+  ]
+}
+```
+
+Language rules:
+- `languageCode` is required and must be unique.
+- `languageName` is required.
+- `languageCode` uses the application's configured language code values, for example `en` for English and `vn` for Vietnamese.
+
+## Language Resource Records
+Stored in `data/language-resources.json` for file-based storage and represented by the `LanguageResource` table in relational storage.
+
+```json
+{
+  "schemaVersion": 1,
+  "generatedAtUtc": "2026-03-26T00:00:00Z",
+  "items": [
+    {
+      "languageCode": "vn",
+      "resourceKey": "book:1:title",
+      "resourceValue": "Nhà Giả Kim"
+    }
+  ]
+}
+```
+
+Language resource rules:
+- `languageCode` is required and must reference an existing language.
+- `resourceKey` is required.
+- `resourceValue` is required.
+- The combination of `languageCode` and `resourceKey` must be unique.
+- Book title translations use the key pattern `book:{bookId}:title` so the English/source title can remain on the book while translated titles are stored as resources.
 
 ## Order Records
 Stored in `data/orders.json`.

@@ -66,3 +66,7 @@ Use this backlog for implementation work. Pull exactly one ready slice at a time
 3. S15 Add `InventoryItem` invariants.
 4. S20 Add `CartItem` invariants.
 5. S31 Add `DistinctTitleBundlePromotion` for decimal bundle discounts.
+
+
+## Wave 7: Localization and Translation
+- [x] S70 Document translation domain knowledge and add `LanguageMaster`/`LanguageResource` persistence tables. Depends on: existing EF Core database context.

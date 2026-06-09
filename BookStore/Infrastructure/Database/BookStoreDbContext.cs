@@ -12,6 +12,8 @@ public sealed class BookStoreDbContext : DbContext
     public DbSet<RequestOrderDetailFormEntity> RequestOrderDetailForms => Set<RequestOrderDetailFormEntity>();
     public DbSet<RequestOrderDetailLineEntity> RequestOrderDetailLines => Set<RequestOrderDetailLineEntity>();
     public DbSet<CatalogBookEntity> CatalogBooks => Set<CatalogBookEntity>();
+    public DbSet<LanguageMasterEntity> LanguageMaster => Set<LanguageMasterEntity>();
+    public DbSet<LanguageResourceEntity> LanguageResource => Set<LanguageResourceEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -41,6 +43,28 @@ public sealed class BookStoreDbContext : DbContext
             builder.Property(e => e.BookId).IsRequired();
             builder.Property(e => e.Title).IsRequired();
             builder.Property(e => e.Author).IsRequired();
+        });
+
+        modelBuilder.Entity<LanguageMasterEntity>(builder =>
+        {
+            builder.HasKey(e => e.Id);
+            builder.HasIndex(e => e.LanguageCode).IsUnique();
+            builder.Property(e => e.LanguageCode).IsRequired();
+            builder.Property(e => e.LanguageName).IsRequired();
+        });
+
+        modelBuilder.Entity<LanguageResourceEntity>(builder =>
+        {
+            builder.HasKey(e => e.Id);
+            builder.HasIndex(e => new { e.LanguageCode, e.ResourceKey }).IsUnique();
+            builder.Property(e => e.LanguageCode).IsRequired();
+            builder.Property(e => e.ResourceKey).IsRequired();
+            builder.Property(e => e.ResourceValue).IsRequired();
+            builder.HasOne(e => e.Language)
+                .WithMany(e => e.Resources)
+                .HasPrincipalKey(e => e.LanguageCode)
+                .HasForeignKey(e => e.LanguageCode)
+                .IsRequired();
         });
     }
 }

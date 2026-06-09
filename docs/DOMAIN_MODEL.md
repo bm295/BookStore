@@ -6,11 +6,13 @@
 Represents a sellable title.
 - `Id` (int, unique)
 - `Isbn` (string, unique)
-- `Title` (string)
+- `Title` (string, default/source-language display name)
 - `Author` (string)
 - `Category` (string)
 - `BasePrice` (decimal)
 - `IsActive` (bool)
+
+Book titles and other display text can be localized through the translation service. For example, a book may keep an English source title in `Title` while exposing a Vietnamese title through a `LanguageResource` entry such as `ResourceKey = book:1:title`, `LanguageCode = vn`, and `ResourceValue = Nhà Giả Kim`.
 
 ### Invariants
 - `BasePrice >= 0`
@@ -75,6 +77,27 @@ Read-model projection for order detail screens and integrations. It is built fro
 - Title and author are joined from catalog metadata to enrich the form.
 - Missing catalog rows do not hide historical order lines; fallback metadata is returned instead.
 
+## LanguageMaster
+Catalog of supported translation languages.
+- `LanguageCode` (string, unique; examples: `en`, `vn`)
+- `LanguageName` (string; examples: `English`, `Vietnamese`)
+
+### Invariants
+- `LanguageCode` is required and unique.
+- `LanguageName` is required.
+
+## LanguageResource
+Localized text value for a domain or UI resource.
+- `LanguageCode` (string, references `LanguageMaster.LanguageCode`)
+- `ResourceKey` (string; examples: `book:1:title`, `catalog:category:programming`)
+- `ResourceValue` (string; translated text)
+
+### Invariants
+- `ResourceKey` is required.
+- `ResourceValue` is required.
+- A language cannot have duplicate `ResourceKey` values.
+- `LanguageCode` must reference a supported language.
+
 ## PromotionRule
 Abstract pricing rule.
 - `Name`
@@ -85,6 +108,7 @@ Abstract pricing rule.
 - `PricingService`: calculates totals and applies rules.
 - `InventoryService`: validates and mutates stock.
 - `CheckoutService`: orchestrates cart -> order.
+- `TranslationService`: resolves localized values by `LanguageCode` and `ResourceKey`, falling back to source-language catalog fields when no resource exists.
 
 ## Repositories (Interfaces)
 - `IBookRepository`

@@ -25,3 +25,20 @@ public sealed class CatalogBookEntity
     public string Title { get; set; } = string.Empty;
     public string Author { get; set; } = string.Empty;
 }
+
+public sealed class LanguageMasterEntity
+{
+    public int Id { get; set; }
+    public string LanguageCode { get; set; } = string.Empty;
+    public string LanguageName { get; set; } = string.Empty;
+    public List<LanguageResourceEntity> Resources { get; set; } = new();
+}
+
+public sealed class LanguageResourceEntity
+{
+    public int Id { get; set; }
+    public string LanguageCode { get; set; } = string.Empty;
+    public LanguageMasterEntity Language { get; set; } = null!;
+    public string ResourceKey { get; set; } = string.Empty;
+    public string ResourceValue { get; set; } = string.Empty;
+}
