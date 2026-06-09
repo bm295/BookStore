@@ -7,6 +7,8 @@ namespace BookStore.Infrastructure.Repositories;
 
 public sealed class OrderFormRepository
 {
+    private const string UnknownAuthor = "Unknown author";
+    private const string UnknownBook = "Unknown book";
     private readonly BookStoreDbContext _dbContext;
 
     public OrderFormRepository(BookStoreDbContext dbContext)
@@ -25,20 +27,40 @@ public sealed class OrderFormRepository
             return new List<RequestOrderDetailLine>();
         }
 
-        var formEntity = await _dbContext.RequestOrderDetailForms
-            .Include(f => f.Lines)
-            .FirstOrDefaultAsync(f => f.OrderId == command.OrderId, cancellationToken);
+        var formId = await _dbContext.RequestOrderDetailForms
+            .Where(form => form.OrderId == command.OrderId)
+            .Select(form => (int?)form.Id)
+            .FirstOrDefaultAsync(cancellationToken);
 
-        if (formEntity is null)
+        if (formId is null)
         {
             return new List<RequestOrderDetailLine>();
         }
 
-        return formEntity.Lines.Select(line => new RequestOrderDetailLine
+        var detailLines = await (
+            from line in _dbContext.RequestOrderDetailLines
+            where line.RequestOrderDetailFormEntityId == formId.Value
+            join book in _dbContext.CatalogBooks
+                on line.BookId equals book.BookId into catalogMatches
+            from catalogBook in catalogMatches.DefaultIfEmpty()
+            orderby line.Id
+            select new
+            {
+                line.BookId,
+                line.Quantity,
+                line.UnitPrice,
+                BookTitle = catalogBook == null ? UnknownBook : catalogBook.Title,
+                BookAuthor = catalogBook == null ? UnknownAuthor : catalogBook.Author
+            }).ToListAsync(cancellationToken);
+
+        return detailLines.Select(line => new RequestOrderDetailLine
         {
             BookId = line.BookId,
+            BookTitle = line.BookTitle,
+            BookAuthor = line.BookAuthor,
             Quantity = line.Quantity,
-            UnitPrice = line.UnitPrice
+            UnitPrice = line.UnitPrice,
+            LineTotal = line.Quantity * line.UnitPrice
         }).ToList();
     }
 }

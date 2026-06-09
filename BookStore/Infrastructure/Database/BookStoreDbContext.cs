@@ -11,6 +11,7 @@ public sealed class BookStoreDbContext : DbContext
 
     public DbSet<RequestOrderDetailFormEntity> RequestOrderDetailForms => Set<RequestOrderDetailFormEntity>();
     public DbSet<RequestOrderDetailLineEntity> RequestOrderDetailLines => Set<RequestOrderDetailLineEntity>();
+    public DbSet<CatalogBookEntity> CatalogBooks => Set<CatalogBookEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -31,6 +32,15 @@ public sealed class BookStoreDbContext : DbContext
             builder.Property(e => e.BookId).IsRequired();
             builder.Property(e => e.Quantity).IsRequired();
             builder.Property(e => e.UnitPrice).IsRequired();
+        });
+
+        modelBuilder.Entity<CatalogBookEntity>(builder =>
+        {
+            builder.HasKey(e => e.Id);
+            builder.HasIndex(e => e.BookId).IsUnique();
+            builder.Property(e => e.BookId).IsRequired();
+            builder.Property(e => e.Title).IsRequired();
+            builder.Property(e => e.Author).IsRequired();
         });
     }
 }

@@ -17,3 +17,11 @@ public sealed class RequestOrderDetailLineEntity
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
 }
+
+public sealed class CatalogBookEntity
+{
+    public int Id { get; set; }
+    public int BookId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Author { get; set; } = string.Empty;
+}

@@ -3,8 +3,11 @@ namespace BookStore.Application.Orders;
 public sealed record RequestOrderDetailLine
 {
     public int BookId { get; init; }
+    public string BookTitle { get; init; } = string.Empty;
+    public string BookAuthor { get; init; } = string.Empty;
     public int Quantity { get; init; }
     public decimal UnitPrice { get; init; }
+    public decimal LineTotal { get; init; }
 }
 
 public sealed record RequestOrderDetailForm

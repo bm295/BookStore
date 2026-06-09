@@ -28,6 +28,7 @@ This document defines the application-layer use cases that AI agents should impl
 | UC-08 | Cashier | Command | `Checkout` | created `Order` and decremented inventory | `DomainValidationException`, `EntityNotFoundException`, `InsufficientStockException` |
 | UC-09 | StoreAdmin | Query | `GetInventorySnapshot` | inventory list with low-stock flags | none for empty result |
 | UC-10 | StoreAdmin | Query | `GetDailySalesSummary` | total orders, revenue, discounts | none for empty result |
+| UC-11 | Cashier / StoreAdmin | Query | `GetRequestOrderDetailForm` | order detail lines enriched with catalog metadata | none for empty or unknown order |
 
 ## Canonical Use Cases
 
@@ -172,6 +173,27 @@ Output:
 Rules:
 - Report groups by UTC calendar day in v1.
 - Empty day returns zero totals, not an error.
+
+### UC-11 GetRequestOrderDetailForm
+Purpose: retrieve order detail lines for an order detail form while including enough catalog knowledge for operators to understand each line.
+
+Input:
+- `OrderId`
+
+Output per line:
+- `BookId`
+- `BookTitle`
+- `BookAuthor`
+- `Quantity`
+- `UnitPrice`
+- `LineTotal`
+
+Rules:
+- Blank or unknown `OrderId` returns an empty line collection.
+- The query joins order detail lines with catalog book metadata by `BookId`.
+- `UnitPrice` remains the order-time snapshot from the detail line.
+- `LineTotal` is calculated as `Quantity * UnitPrice`.
+- Missing catalog metadata returns fallback title `Unknown book` and author `Unknown author` so historical order lines remain visible.
 
 ## Out of Scope
 - Shopping sessions shared across devices
