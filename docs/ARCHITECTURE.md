@@ -87,3 +87,4 @@ Domain -> no Application or Infrastructure dependencies
 Architecture tests in `BookStoreTests/Architecture` protect the dependency rules for the Domain and Application layers.
 
 `OrderFormRepository.GetRequestOrderDetailFormAsync` is an infrastructure read-model adapter: it accepts an application command, resolves the requested form, and joins order detail lines with catalog book metadata in EF Core before returning application DTOs.
+The infrastructure database model includes translation tables for localized catalog text. `LanguageMaster` stores supported language codes and names, while `LanguageResource` stores translated values keyed by resource identifier and language. Application/domain translation behavior should depend on abstractions, with EF Core tables remaining an infrastructure detail.
