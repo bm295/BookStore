@@ -43,6 +43,12 @@ Build a BookStore management application that allows bookstore operators to mana
 - Top-selling books.
 - Inventory snapshot.
 
+### 3.7 Business Sequencing
+- Generate stable, unique identifiers for books and orders without exposing user-controlled sequence values.
+- Preserve cart and order line ordering so operator-facing summaries match the checkout flow.
+- Apply checkout steps in a deterministic sequence: validate cart, validate stock, price the cart, create the order, decrement inventory, then persist the order.
+- Apply promotion rules in explicit priority order so pricing remains repeatable as new discounts are added.
+
 ## 4) Non-Functional Requirements
 - **Correctness**: discount and totals must be test-validated.
 - **Maintainability**: clear boundaries and low coupling.

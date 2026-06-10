@@ -10,7 +10,7 @@ This repository is configured for **.NET 10** and **C# 14** (`LangVersion=previe
 - `docs/PRODUCT_REQUIREMENTS.md`  
   Functional and non-functional scope, user roles, and acceptance criteria.
 - `docs/DOMAIN_MODEL.md`  
-  Core entities, relationships, and invariants.
+  Core entities, relationships, invariants, and sequence-domain rules.
 - `docs/USE_CASES.md`  
   Application use cases, command boundaries, and actor interactions.
 - `docs/ARCHITECTURE.md`  
@@ -73,7 +73,7 @@ dotnet test
 
 ## Existing IEnumerable demo: `BookIdSequence`
 
-`BookStore/BookIdSequence.cs` demonstrates `IEnumerable<int>` by yielding a sequence of book IDs.
+`BookStore/BookIdSequence.cs` demonstrates `IEnumerable<int>` by yielding a sequence of book IDs. It is an educational enumerable, not the production catalog ID allocator; `BookStore/Infrastructure/Services/SequenceService.cs` reads sequence rows by key through `ISequenceRepository` before allocating the next value in the `Sequences` table.
 
 Run only the demo tests:
 

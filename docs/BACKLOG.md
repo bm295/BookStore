@@ -70,3 +70,10 @@ Use this backlog for implementation work. Pull exactly one ready slice at a time
 
 ## Wave 7: Localization and Translation
 - [x] S70 Document translation domain knowledge and add `LanguageMaster`/`LanguageResource` persistence tables. Depends on: existing EF Core database context.
+
+## Wave 8: Sequence Knowledge and Deterministic Ordering
+- [x] S80 Add `SequenceService` backed by `ISequenceRepository` and the `Sequences` table for generated IDs, line positions, and priority ordering. Depends on: sequence documentation.
+- [ ] S81 Add cart/order line sequence preservation from `AddCartLine` through `Checkout`. Depends on: S20, S50.
+- [ ] S82 Persist explicit order-line sequence values and return order details sorted by that value. Depends on: S51, S81.
+- [ ] S83 Add tests for promotion priority ordering and invalid priority ties. Depends on: S30.
+- [x] S84 Add a relational `Sequences` table implementation of `ISequenceRepository`. Depends on: S80.

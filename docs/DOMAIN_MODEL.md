@@ -110,6 +110,30 @@ Abstract pricing rule.
 - `CheckoutService`: orchestrates cart -> order.
 - `TranslationService`: resolves localized values by `LanguageCode` and `ResourceKey`, falling back to source-language catalog fields when no resource exists.
 
+
+## Sequence Domain Knowledge
+
+The bookstore does need sequence domain knowledge, but it should be modeled as business ordering and identifier-generation rules rather than as a standalone `IEnumerable` demo concept.
+
+### Identifier Sequences
+- `Book.Id` and `Order.OrderId` are system-generated and must be unique.
+- User input must not choose the next identifier value.
+- A sequence generator or repository may allocate IDs, but the domain only depends on the resulting identity value.
+- Identifier allocation must be monotonic within a single store/storage scope when integer IDs are used, but business logic must not infer creation time from `Book.Id`.
+
+### Workflow Sequences
+- Checkout follows this required order: cart validation -> active-book validation -> stock validation -> pricing calculation -> order creation -> inventory decrement -> order persistence.
+- Inventory must not be decremented before all checkout validation succeeds.
+- Pricing must not reserve stock.
+
+### Ordered Collections
+- Cart lines and order lines preserve insertion order for operator-facing summaries and read-model projections.
+- Pricing rules are evaluated by ascending `PromotionRule.Priority`; ties are invalid unless a later rule defines an explicit tie-breaker.
+- Order detail read models return lines in the same sequence stored on the order when a line sequence number is available.
+
+### Existing Code Note
+`BookIdSequence` is currently an educational enumerable for yielding integer book IDs. It is not the authoritative catalog ID allocator. `SequenceService` is the current infrastructure service for allocating numeric sequence values by key through `ISequenceRepository`; `SequenceRepository` stores and increments those values in the `Sequences` table. The service creates book/order IDs from allocated values, assigns one-based line sequence values, and orders priority-based rules deterministically.
+
 ## Repositories (Interfaces)
 - `IBookRepository`
 - `IInventoryRepository`
