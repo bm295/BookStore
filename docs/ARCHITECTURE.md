@@ -50,8 +50,19 @@ External concerns:
 3. Encapsulate pricing rules behind a promotion interface.
 4. Use repository interfaces to isolate storage concerns.
 5. Preserve backward compatibility where feasible during refactors.
+6. Treat sequence concerns as application/domain contracts: identifier allocation belongs behind ports, workflow ordering belongs in use cases, and presentation ordering is explicit in read models.
 
-## 6) Risk Areas and Mitigations
+## 6) Sequence Architecture Guidance
+
+Sequence knowledge is required in three places and should not leak across layers:
+
+- **Identifier generation:** define an application port such as `ISequenceGenerator` or rely on repository/database identity generation. Domain entities receive IDs but do not know how the next value is allocated.
+- **Workflow ordering:** application services own ordered flows such as checkout so validation, pricing, inventory mutation, and persistence happen in a deterministic sequence.
+- **Read-model ordering:** infrastructure adapters must persist and return explicit line sequence values when order-line order matters. Database row order must never be treated as meaningful without an `OrderLineSequence`/position column or equivalent sort key.
+
+`BookStore.Infrastructure.Services.SequenceService` is the current infrastructure service for sequence-oriented behavior: it requests a sequence record by key from `ISequenceRepository`, allocates the next value through that repository, and stores numeric state in the `Sequences` table via `SequenceRepository`. The service also assigns one-based line sequence values and orders priority-based rules while rejecting priority ties. `BookIdSequence` can remain as a compatibility/demo enumerable, but production catalog registration should use `SequenceService` or a future application abstraction rather than deriving IDs from existing entities.
+
+## 7) Risk Areas and Mitigations
 - **Risk:** Breaking existing tests during model expansion.  
   **Mitigation:** Add characterization tests before refactoring.
 
@@ -61,14 +72,14 @@ External concerns:
 - **Risk:** File format instability.  
   **Mitigation:** Versioned schema for persisted records.
 
-## 7) Companion Documents
+## 8) Companion Documents
 - Use `USE_CASES.md` for application-level boundaries and command/query definitions.
 - Use `PRICING_SPEC.md` for canonical pricing behavior.
 - Use `PERSISTENCE_SCHEMA.md` for file layout and JSON contracts.
 - Use `ERROR_MODEL.md` for exception taxonomy.
 - Use `ADR/` for stable architecture decisions.
 
-## 8) Incremental Clean Architecture Layout
+## 9) Incremental Clean Architecture Layout
 The codebase now follows an incremental Clean Architecture layout inside the existing `BookStore` class library while preserving the public compatibility facades used by existing callers and tests.
 
 - `BookStore/Domain/*` contains enterprise/domain concerns such as catalog models, pricing policy abstractions, discount policies, and typed domain errors.

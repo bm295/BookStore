@@ -42,3 +42,10 @@ public sealed class LanguageResourceEntity
     public string ResourceKey { get; set; } = string.Empty;
     public string ResourceValue { get; set; } = string.Empty;
 }
+
+public sealed class SequenceEntity
+{
+    public int Id { get; set; }
+    public string SequenceKey { get; set; } = string.Empty;
+    public long CurrentValue { get; set; }
+}

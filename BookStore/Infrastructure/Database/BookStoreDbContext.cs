@@ -14,6 +14,7 @@ public sealed class BookStoreDbContext : DbContext
     public DbSet<CatalogBookEntity> CatalogBooks => Set<CatalogBookEntity>();
     public DbSet<LanguageMasterEntity> LanguageMaster => Set<LanguageMasterEntity>();
     public DbSet<LanguageResourceEntity> LanguageResource => Set<LanguageResourceEntity>();
+    public DbSet<SequenceEntity> Sequences => Set<SequenceEntity>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -65,6 +66,14 @@ public sealed class BookStoreDbContext : DbContext
                 .HasPrincipalKey(e => e.LanguageCode)
                 .HasForeignKey(e => e.LanguageCode)
                 .IsRequired();
+        });
+
+        modelBuilder.Entity<SequenceEntity>(builder =>
+        {
+            builder.HasKey(e => e.Id);
+            builder.HasIndex(e => e.SequenceKey).IsUnique();
+            builder.Property(e => e.SequenceKey).IsRequired();
+            builder.Property(e => e.CurrentValue).IsRequired();
         });
     }
 }

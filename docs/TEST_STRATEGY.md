@@ -37,6 +37,7 @@ Examples:
 2. Stock decrement and validation
 3. File parsing and error paths
 4. Catalog mutation rules
+5. Sequence-sensitive behavior: generated ID uniqueness, line-order preservation, checkout step atomicity, and pricing rule priority
 
 ## Required Test Types per Feature
 For each new feature, include:
@@ -49,6 +50,8 @@ For each new feature, include:
 - Avoid wall-clock assertions when possible.
 - Keep tests independent (no shared mutable state).
 - Prefer in-memory doubles for repositories.
+- Assert order explicitly for sequence-sensitive results; do not rely on incidental collection or database ordering.
+- Cover `SequenceService` with unit tests that verify it reads a sequence by key before repository allocation, stores sequence values in the `Sequences` table, uses the book/order sequence keys, preserves line order, formats order IDs, orders priorities, and rejects duplicate priorities.
 
 ## CI Gate Recommendation
 - Run: `dotnet test`
