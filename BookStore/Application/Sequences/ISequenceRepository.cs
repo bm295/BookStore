@@ -1,4 +1,4 @@
-namespace BookStore.Infrastructure.Repositories;
+namespace BookStore.Application.Sequences;
 
 public interface ISequenceRepository
 {

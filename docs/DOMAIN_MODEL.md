@@ -132,7 +132,7 @@ The bookstore does need sequence domain knowledge, but it should be modeled as b
 - Order detail read models return lines in the same sequence stored on the order when a line sequence number is available.
 
 ### Existing Code Note
-`BookIdSequence` is currently an educational enumerable for yielding integer book IDs. It is not the authoritative catalog ID allocator. `SequenceService` is the current infrastructure service for allocating numeric sequence values by key through `ISequenceRepository`; `SequenceRepository` stores and increments those values in the `Sequences` table. The service creates book/order IDs from allocated values, assigns one-based line sequence values, and orders priority-based rules deterministically.
+`BookIdSequence` is currently an educational enumerable for yielding integer book IDs. It is not the authoritative catalog ID allocator. `SequenceService` is the application service for allocating numeric sequence values by key through the application-owned `ISequenceRepository` port; the infrastructure `SequenceRepository` adapter stores and increments those values in the `Sequences` table. The service creates book/order IDs from allocated values. `SequenceOrdering` separately assigns one-based line sequence values and orders priority-based rules deterministically.
 
 ## Repositories (Interfaces)
 - `IBookRepository`

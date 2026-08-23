@@ -1,6 +1,6 @@
 using BookStore.Infrastructure.Database;
+using BookStore.Application.Sequences;
 using BookStore.Infrastructure.Repositories;
-using BookStore.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -18,6 +18,18 @@ public class SequenceServiceTests
 
         Assert.Equal(42, nextValue);
         Assert.Equal(new[] { "GetByKey:catalog-book", "AllocateSequence:catalog-book:41" }, repository.Calls);
+    }
+
+    [Fact]
+    public void AllocateNextValue_WhenRepositoryReturnsDifferentKey_DoesNotAllocate()
+    {
+        var repository = new RecordingSequenceRepository(new SequenceRecord("wrong-key", 41), allocatedValue: 42);
+        var service = new SequenceService(repository);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => service.AllocateNextValue("catalog-book"));
+
+        Assert.Contains("wrong-key", exception.Message);
+        Assert.Equal(new[] { "GetByKey:catalog-book" }, repository.Calls);
     }
 
     [Fact]
@@ -102,62 +114,6 @@ public class SequenceServiceTests
             index => index.IsUnique && index.Properties.Any(property => property.Name == nameof(SequenceEntity.SequenceKey)));
     }
 
-    [Fact]
-    public void AssignLineSequence_PreservesInputOrderWithOneBasedPositions()
-    {
-        var service = new SequenceService(new RecordingSequenceRepository(new SequenceRecord("unused", 0), allocatedValue: 1));
-
-        var sequencedLines = service.AssignLineSequence(new[] { "first", "second", "third" });
-
-        Assert.Collection(
-            sequencedLines,
-            line =>
-            {
-                Assert.Equal(1, line.Sequence);
-                Assert.Equal("first", line.Value);
-            },
-            line =>
-            {
-                Assert.Equal(2, line.Sequence);
-                Assert.Equal("second", line.Value);
-            },
-            line =>
-            {
-                Assert.Equal(3, line.Sequence);
-                Assert.Equal("third", line.Value);
-            });
-    }
-
-    [Fact]
-    public void OrderByPriority_WhenPrioritiesAreUnique_ReturnsAscendingPriorityOrder()
-    {
-        var service = new SequenceService(new RecordingSequenceRepository(new SequenceRecord("unused", 0), allocatedValue: 1));
-        var rules = new[]
-        {
-            new PriorityRule("third", 30),
-            new PriorityRule("first", 10),
-            new PriorityRule("second", 20)
-        };
-
-        var orderedRules = service.OrderByPriority(rules, rule => rule.Priority);
-
-        Assert.Equal(new[] { "first", "second", "third" }, orderedRules.Select(rule => rule.Name));
-    }
-
-    [Fact]
-    public void OrderByPriority_WhenPriorityIsDuplicated_ThrowsInvalidOperationException()
-    {
-        var service = new SequenceService(new RecordingSequenceRepository(new SequenceRecord("unused", 0), allocatedValue: 1));
-        var rules = new[]
-        {
-            new PriorityRule("first", 10),
-            new PriorityRule("duplicate", 10)
-        };
-
-        var exception = Assert.Throws<InvalidOperationException>(() => service.OrderByPriority(rules, rule => rule.Priority));
-        Assert.Contains("duplicated", exception.Message, StringComparison.OrdinalIgnoreCase);
-    }
-
     private static BookStoreDbContext CreateContext()
     {
         var options = new DbContextOptionsBuilder<BookStoreDbContext>()
@@ -197,5 +153,4 @@ public class SequenceServiceTests
         }
     }
 
-    private sealed record PriorityRule(string Name, int Priority);
 }

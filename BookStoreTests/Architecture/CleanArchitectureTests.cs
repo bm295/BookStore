@@ -42,6 +42,26 @@ public class CleanArchitectureTests
         Assert.Empty(violations);
     }
 
+    [Fact]
+    public void SequencePersistence_DependsOnApplicationOwnedPort()
+    {
+        Assert.Equal("BookStore.Application.Sequences", typeof(BookStore.Application.Sequences.ISequenceRepository).Namespace);
+        Assert.True(typeof(BookStore.Application.Sequences.ISequenceRepository)
+            .IsAssignableFrom(typeof(BookStore.Infrastructure.Repositories.SequenceRepository)));
+        Assert.Equal("BookStore.Application.Sequences", typeof(BookStore.Application.Sequences.SequenceService).Namespace);
+    }
+
+    [Fact]
+    public void IdentifierAllocation_DoesNotOwnCollectionOrderingResponsibilities()
+    {
+        var methodNames = typeof(BookStore.Application.Sequences.SequenceService)
+            .GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
+            .Select(method => method.Name);
+
+        Assert.DoesNotContain("AssignLineSequence", methodNames);
+        Assert.DoesNotContain("OrderByPriority", methodNames);
+    }
+
     private static IEnumerable<Type> GetReferencedTypes(Type type)
     {
         return type.GetMembers(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)

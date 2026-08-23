@@ -1,3 +1,4 @@
+using BookStore.Application.Sequences;
 using BookStore.Infrastructure.Database;
 using Microsoft.EntityFrameworkCore;
 
