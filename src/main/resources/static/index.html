@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="vi">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BookStore</title>
+<style>body{font:16px system-ui;margin:40px auto;max-width:760px;padding:0 20px}input,button{padding:9px;margin:4px}button{cursor:pointer}.card{border:1px solid #ddd;border-radius:8px;padding:16px;margin:12px 0}#message{color:#175c36}</style></head>
+<body><h1>BookStore</h1><p>Quản lý sách và tính giá giỏ hàng.</p>
+<section class="card"><h2>Thêm sách</h2><form id="bookForm"><label>Giá <input id="price" type="number" min="0" required></label><button>Thêm</button></form></section>
+<section class="card"><h2>Danh mục</h2><div id="books">Đang tải...</div></section>
+<section class="card"><h2>Tính giá giỏ hàng</h2><p>Nhập ID sách, cách nhau bằng dấu phẩy. Các ID khác nhau được áp dụng discount.</p><input id="cart" placeholder="1,2,3"><button onclick="priceCart()">Tính giá</button><p id="message"></p></section>
+<section class="card"><h2>Chia tiền / hoàn tiền</h2><p>Nhập các dòng theo dạng <code>giá:số lượng</code>, ví dụ <code>10:1,20:1,30:1</code>.</p><input id="lines" placeholder="10:1,20:1,30:1"><input id="excluded" type="number" min="0" placeholder="Index loại trừ"><input id="charged" type="number" min="0" step="0.01" placeholder="Đã thanh toán"><button onclick="splitPayment()">Tính hoàn tiền</button><p id="paymentMessage"></p></section>
+<script>
+async function load(){const r=await fetch('/api/books');const books=await r.json();document.querySelector('#books').innerHTML=books.length?books.map(b=>`<div>Sách #${b.id} — ${b.price}</div>`).join(''):'Chưa có sách';}
+document.querySelector('#bookForm').onsubmit=async e=>{e.preventDefault();await fetch('/api/books',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({price:Number(price.value)})});price.value='';load();};
+async function priceCart(){const books=await (await fetch('/api/books')).json();const ids=cart.value.split(',').map(x=>Number(x.trim())).filter(Boolean);const items=ids.map(id=>{const b=books.find(x=>x.id===id);return b&&{bookId:b.id,price:b.price};}).filter(Boolean);const r=await fetch('/api/pricing/cart',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(items)});const data=await r.json();message.textContent=r.ok?`Tổng tiền: ${data.total}`:data.error;}
+async function splitPayment(){const parsed=lines.value.split(',').map((x,i)=>{const [price,quantity]=x.split(':').map(Number);return {bookId:i+1,quantity,unitPrice:price,sequence:i+1};});const r=await fetch('/api/payments/split',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({lines:parsed,excludedLineIndex:Number(excluded.value),chargedAmount:Number(charged.value)})});const data=await r.json();paymentMessage.textContent=r.ok?`${data.message} — phần công bằng: ${data.fairShare}, hoàn lại: ${data.refund}`:data.error;}
+load();
+</script></body></html>
