@@ -1,0 +1,2 @@
+package com.bookstore; import com.bookstore.application.pricing.CalculateCartPriceUseCase; import java.util.List;
+public class BookStoreEngine { private final CalculateCartPriceUseCase useCase; public BookStoreEngine(){this(CalculateCartPriceUseCase.createDefault());} public BookStoreEngine(CalculateCartPriceUseCase useCase){this.useCase=useCase;} public int calculatePrice(List<Book> cart){return useCase.execute(cart);} }

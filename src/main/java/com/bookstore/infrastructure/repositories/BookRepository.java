@@ -1,0 +1,7 @@
+package com.bookstore.infrastructure.repositories;
+import com.bookstore.domain.catalog.Book; import com.fasterxml.jackson.databind.*; import com.fasterxml.jackson.databind.node.*; import java.io.*; import java.nio.file.*; import java.time.*; import java.util.*;
+public final class BookRepository { private final Path directory,file; private final ObjectMapper mapper=new ObjectMapper(); public BookRepository(){this(null);} public BookRepository(String dataDirectory){directory=Path.of(dataDirectory==null||dataDirectory.isBlank()?"data":dataDirectory);file=directory.resolve("books.json");}
+ public List<Book> getAll(){if(!Files.exists(file))return List.of(); try{var envelope=mapper.readValue(file.toFile(),Envelope.class); if(envelope.items==null)return List.of(); return Arrays.asList(mapper.convertValue(envelope.items,Book[].class));}catch(IOException e){throw new UncheckedIOException(e);}}
+ public void saveAll(Iterable<Book> books){try{Files.createDirectories(directory);var list=new ArrayList<Book>();books.forEach(list::add);var root=mapper.createObjectNode().put("schemaVersion",1).put("generatedAtUtc",Instant.now().toString());root.set("items",mapper.valueToTree(list));var tmp=Files.createTempFile(directory,"books-",".tmp");mapper.writerWithDefaultPrettyPrinter().writeValue(tmp.toFile(),root);Files.move(tmp,file,StandardCopyOption.REPLACE_EXISTING);}catch(IOException e){throw new UncheckedIOException(e);}}
+ private static final class Envelope{public int schemaVersion; public String generatedAtUtc; public JsonNode items;}
+}
