@@ -21,7 +21,6 @@ This document defines the application-layer use cases that AI agents should impl
 | UC-01 | StoreAdmin | Command | `RegisterBook` | created `BookId` and stored `Book` | `DomainValidationException`, `DuplicateEntityException` |
 | UC-02 | StoreAdmin | Command | `UpdateBookMetadata` | updated `Book` | `DomainValidationException`, `EntityNotFoundException`, `DuplicateEntityException` |
 | UC-03 | StoreAdmin | Command | `DeactivateBook` | inactive `Book` | `EntityNotFoundException` |
-| UC-04 | StoreAdmin | Command | `AdjustStock` | updated `InventoryItem` | `DomainValidationException`, `EntityNotFoundException` |
 | UC-05 | Cashier | Command | `AddCartLine` | updated `Cart` | `DomainValidationException`, `EntityNotFoundException` |
 | UC-06 | Cashier | Command | `RemoveCartLine` | updated `Cart` | `EntityNotFoundException` |
 | UC-07 | Cashier | Query | `PriceCart` | pricing summary and trace | `DomainValidationException` |
@@ -92,23 +91,6 @@ Rules:
 - Deactivated books remain readable from the catalog.
 - Existing orders and reports must continue to reference the book.
 - Hard delete is out of scope for v1.
-
-### UC-04 AdjustStock
-Purpose: increase or decrease available inventory for one title.
-
-Input:
-- `BookId`
-- `QuantityDelta`
-- optional reason string for audit/logging later
-
-Rules:
-- The book must exist.
-- Negative results are not allowed.
-- `ReorderThreshold` is managed on `InventoryItem`, not on each adjustment command.
-- After adjustment, low-stock state is `QuantityOnHand <= ReorderThreshold`.
-
-Success result:
-- Updated `InventoryItem`
 
 ### UC-05 AddCartLine
 Purpose: add a book to a transient cart or increase an existing line quantity.
