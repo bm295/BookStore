@@ -1,4 +1,4 @@
-# BookStore (Java 21)
+# BookStore (Java 25)
 
 BookStore is a library-first bookstore domain/application project implemented entirely in Java.
 

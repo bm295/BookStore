@@ -19,6 +19,11 @@ Initial files:
 - `data/languages.json`
 - `data/language-resources.json`
 
+The optional advisory regression model uses `data/price-model.json`, with a separate
+versioned model format (not the `items` envelope). See
+[PRICE_SUGGESTIONS.md](PRICE_SUGGESTIONS.md) for its feature order, coefficient layout,
+and replacement behavior.
+
 Rules:
 - Writers create the `data/` directory on first write if it does not exist.
 - Readers do not create files as a side effect.

@@ -2,6 +2,12 @@
 
 Canonical project documentation is in `README.md`. Run `mvn test` to verify the Java implementation.
 
+## Price suggestions
+
+An advisory cubic regression API supports training and book price suggestions using
+page count and publication age. See [PRICE_SUGGESTIONS.md](docs/PRICE_SUGGESTIONS.md)
+for request examples, storage, validation, and model limitations. Build with Java 21.
+
 ## Stock adjustment
 
 `application.commands.AdjustStockUseCase` accepts a book lookup and an inventory repository
