@@ -6,7 +6,7 @@ Canonical project documentation is in `README.md`. Run `mvn test` to verify the 
 
 An advisory cubic regression API supports training and book price suggestions using
 page count and publication age. See [PRICE_SUGGESTIONS.md](docs/PRICE_SUGGESTIONS.md)
-for request examples, storage, validation, and model limitations. Build with Java 21.
+for request examples, storage, validation, and model limitations. Build with Java 25.
 
 ## Stock adjustment
 
