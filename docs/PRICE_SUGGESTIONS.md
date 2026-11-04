@@ -1,6 +1,6 @@
 # Book price suggestions
 
-This Java 21 feature supplies advisory prices to operators. Catalog prices, cart
+This Java 25 feature supplies advisory prices to operators. Catalog prices, cart
 discounts and payment calculations continue to use their existing business rules.
 Suggestions never write to the catalog. There is no automatic price approval.
 
